@@ -19,7 +19,7 @@
   html, body { margin: 0; height: 100%; background: var(--bg); color: var(--fg);
     font-family: -apple-system, "SF Pro Text", Inter, system-ui, sans-serif; }
   html, body { overflow: hidden; overscroll-behavior: none; }
-  #app { height: var(--tg-viewport-stable-height, 100dvh); max-height: 100dvh; overflow: hidden; display: flex; flex-direction: column; padding: 16px 20px 24px; }
+  #app { height: var(--tg-viewport-stable-height, 100dvh); max-height: 100dvh; overflow: hidden; display: flex; flex-direction: column; padding: calc(16px + var(--top-inset, 0px)) 20px calc(24px + var(--bot-inset, 0px)); }
   .top { display: flex; justify-content: space-between; align-items: center; min-height: 44px; gap: 8px; }
   .top .group { display: flex; gap: 8px; }
   .pill { background: var(--card); border: 1px solid var(--line); border-radius: 999px;
@@ -137,6 +137,24 @@
 <script>
 const tg = window.Telegram && Telegram.WebApp;
 if (tg) { tg.ready(); tg.expand(); try { tg.setHeaderColor('#f0ebe2'); tg.setBackgroundColor('#f0ebe2'); } catch(e){} }
+// Tablets / large screens: ask Telegram for fullscreen and keep content below its overlay buttons
+function applyInsets(){
+  try {
+    const s = (tg.safeAreaInset||{}).top||0, c = (tg.contentSafeAreaInset||{}).top||0;
+    const b = (tg.safeAreaInset||{}).bottom||0;
+    document.documentElement.style.setProperty("--top-inset", (s + c) + "px");
+    document.documentElement.style.setProperty("--bot-inset", b + "px");
+  } catch(e){}
+}
+if (tg) {
+  try {
+    if (Math.min(screen.width, screen.height) >= 700 && tg.requestFullscreen && !tg.isFullscreen) tg.requestFullscreen();
+    tg.onEvent && tg.onEvent("fullscreenChanged", applyInsets);
+    tg.onEvent && tg.onEvent("safeAreaChanged", applyInsets);
+    tg.onEvent && tg.onEvent("contentSafeAreaChanged", applyInsets);
+    applyInsets();
+  } catch(e){}
+}
 const haptic = (t) => { try { tg.HapticFeedback.notificationOccurred(t); } catch(e){} };
 
 /* ---- Words. lvl = CEFR level, ex = example sentence ---- */
