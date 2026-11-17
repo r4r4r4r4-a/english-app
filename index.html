@@ -18,7 +18,8 @@
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
   html, body { margin: 0; height: 100%; background: var(--bg); color: var(--fg);
     font-family: -apple-system, "SF Pro Text", Inter, system-ui, sans-serif; }
-  #app { height: 100%; display: flex; flex-direction: column; padding: 16px 20px 24px; }
+  html, body { overflow: hidden; overscroll-behavior: none; }
+  #app { height: var(--tg-viewport-stable-height, 100dvh); max-height: 100dvh; overflow: hidden; display: flex; flex-direction: column; padding: 16px 20px 24px; }
   .top { display: flex; justify-content: space-between; align-items: center; min-height: 44px; gap: 8px; }
   .top .group { display: flex; gap: 8px; }
   .pill { background: var(--card); border: 1px solid var(--line); border-radius: 999px;
